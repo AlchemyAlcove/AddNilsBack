@@ -8,6 +8,13 @@ defmodule ParamUtils do
   For update actions the user may actually want to save a nil value.
   original param is used to pass the original data from user including the nils and empty strings.
   last param is a list of user params that could be nil or empty string.
+
+  ## Examples
+
+      iex> ParamUtils.add_nils_back({:ok, %{params: %{}}}, [], [])
+      {:ok, %{params: %{}}}
+      iex> ParamUtils.add_nils_back({:ok, %{params: %{colors: "Orange"}}}, %{"colors" => "Orange", "image" => nil}, ["colors", "image"])
+      {:ok, %{params: %{colors: "Orange", image: nil}}}
   """
   def add_nils_back(msg, _original, []), do: msg
   def add_nils_back({:ok, %{params: params} = data} = msg, original, [item | list]) do
