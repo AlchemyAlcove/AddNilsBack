@@ -10,11 +10,11 @@ use Mix.Config
 
 # You can configure for your application as:
 #
-#     config :add_nils_back, key: :value
+#     config :param_utils, key: :value
 #
 # And access this configuration in your application as:
 #
-#     Application.get_env(:add_nils_back, :key)
+#     Application.get_env(:param_utils, :key)
 #
 # Or configure a 3rd-party app:
 #
