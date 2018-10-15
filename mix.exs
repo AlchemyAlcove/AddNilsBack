@@ -10,6 +10,22 @@ defmodule ParamUtils.Mixfile do
      deps: deps()]
   end
 
+  defp description do
+    """
+    ParamUtils adds nils back to changesets.
+    """
+  end
+
+  defp package do
+    [
+     files: ["lib", "mix.exs", "README.md"],
+     maintainers: ["Mike Hoffert"],
+     licenses: ["Apache 2.0"],
+     links: %{"GitHub" => "https://github.com/alchemyalcove/ParamUtils",
+	      "Docs" => "https://hexdocs.pm/param_utils/"}
+     ]
+  end
+
   # Configuration for the OTP application
   #
   # Type "mix help compile.app" for more information
@@ -28,6 +44,9 @@ defmodule ParamUtils.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    []
+    [
+      {:dialyxir, "~> 0.3", only: :dev},
+      {:ex_doc, "~> 0.11", only: :dev}
+    ]
   end
 end
