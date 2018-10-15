@@ -16,6 +16,7 @@ defmodule ParamUtils do
       iex> ParamUtils.add_nils_back({:ok, %{params: %{colors: "Orange"}}}, %{"colors" => "Orange", "image" => nil}, ["colors", "image"])
       {:ok, %{params: %{colors: "Orange", image: nil}}}
   """
+  @spec add_nils_back({:ok, Map.t}, List.t, List.t) :: {:ok, Map.t}
   def add_nils_back(msg, _original, []), do: msg
   def add_nils_back({:ok, %{params: params} = data} = msg, original, [item | list]) do
     if Map.has_key?(original, item) do
