@@ -11,22 +11,25 @@ defmodule ParamUtils do
 
   ## Examples
 
-      iex> ParamUtils.add_nils_back({:ok, %{params: %{}}}, [], [])
-      {:ok, %{params: %{}}}
-      iex> ParamUtils.add_nils_back({:ok, %{params: %{colors: "Orange"}}}, %{"colors" => "Orange", "image" => nil}, ["colors", "image"])
-      {:ok, %{params: %{colors: "Orange", image: nil}}}
+      iex> ParamUtils.add_nils_back({:ok, %{original_params: %{}, params: %{}}})
+      {:ok, %{original_params: %{}, params: %{}}}
+      iex> ParamUtils.add_nils_back({:ok, %{original_params: %{"colors" => "Orange", "image" => nil}, params: %{colors: "Orange"}}})
+      {:ok, %{original_params: %{"colors" => "Orange", "image" => nil}, params: %{colors: "Orange", image: nil}}}
   """
-  @spec add_nils_back({:ok, Map.t}, List.t, List.t) :: {:ok, Map.t}
-  def add_nils_back(msg, _original, []), do: msg
-  def add_nils_back({:ok, %{params: params} = data} = msg, original, [item | list]) do
+  @spec add_nils_back({:ok, %{original_params: List.t, params: List.t}} | {:error, Map.t}) :: {:ok, Map.t} | {:error, Map.t}
+  def add_nils_back({:error, _} = msg), do: msg
+  def add_nils_back({:ok, %{original_params: original}} = msg), do: add_nils_back(msg, Map.keys(original))
+  def add_nils_back({:ok, _}), do: {:error, "Original params are required"}
+  def add_nils_back(msg, []), do: msg
+  def add_nils_back({:ok, %{original_params: original, params: params} = data} = msg, [item | list]) do
     if Map.has_key?(original, item) do
       case Map.get(original, item) do
-        nil -> add_nils_back({:ok, data |> Map.put(:params, params |> Map.put(String.to_atom(item), nil))}, original, list)
-        "" -> add_nils_back({:ok, data |> Map.put(:params, params |> Map.put(String.to_atom(item), nil))}, original, list)
-        _ -> add_nils_back(msg, original, list)
+        nil -> add_nils_back({:ok, data |> Map.put(:params, params |> Map.put(String.to_atom(item), nil))}, list)
+        "" -> add_nils_back({:ok, data |> Map.put(:params, params |> Map.put(String.to_atom(item), nil))}, list)
+        _ -> add_nils_back(msg, list)
       end
     else
-      add_nils_back(msg, original, list)
+      add_nils_back(msg, list)
     end
   end
 end

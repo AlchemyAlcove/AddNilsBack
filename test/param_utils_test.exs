@@ -3,7 +3,7 @@ defmodule ParamUtilsTest do
   doctest ParamUtils
 
   test "empty" do
-    assert ParamUtils.add_nils_back({:ok, %{params: %{}}}, [], []) == {:ok, %{params: %{}}}
+    assert ParamUtils.add_nils_back({:ok, %{original_params: %{}, params: %{}}}) == {:ok, %{original_params: %{}, params: %{}}}
   end
 
   test "Two params with one nil" do
@@ -11,7 +11,7 @@ defmodule ParamUtilsTest do
       "colors" => "Orange",
       "image" => nil
     }
-    assert ParamUtils.add_nils_back({:ok, %{params: %{colors: "Orange"}}}, original, ["colors", "image"]) == {:ok, %{params: %{colors: "Orange", image: nil}}}
+    assert ParamUtils.add_nils_back({:ok, %{original_params: original, params: %{colors: "Orange"}}}) == {:ok, %{original_params: original, params: %{colors: "Orange", image: nil}}}
   end
 
   test "Two params with no nil" do
@@ -19,6 +19,6 @@ defmodule ParamUtilsTest do
       "colors" => "Orange",
       "image" => "https://google.com/lkajsd"
     }
-    assert ParamUtils.add_nils_back({:ok, %{params: %{colors: "Orange", image: "https://google.com/lkajsd"}}}, original, ["colors", "image"]) == {:ok, %{params: %{colors: "Orange", image: "https://google.com/lkajsd"}}}
+    assert ParamUtils.add_nils_back({:ok, %{original_params: original, params: %{colors: "Orange", image: "https://google.com/lkajsd"}}}) == {:ok, %{original_params: original, params: %{colors: "Orange", image: "https://google.com/lkajsd"}}}
   end
 end
