@@ -1,8 +1,9 @@
 defmodule ParamUtils do
   @moduledoc """
-  ParamUtils adds nils back to changesets.
+  ParamUtils provides functions for converting user input into accepted internal data.
   """
 
+  @doc since: "0.1.0"
   @doc """
   Params library removes nil and empty strings via changeset.
   For update actions the user may actually want to save a nil value.
@@ -32,4 +33,22 @@ defmodule ParamUtils do
       add_nils_back(msg, list)
     end
   end
+
+  @doc since: "0.2.0"
+  @spec assign_changeset({:ok, Map.t} | {:error, Map.t}, Map.t) :: {:ok, Map.t} | {:error, Map.t}
+  def assign_changeset({:ok, map}, changeset), do: {:ok, map |> Map.put(:param_changeset, changeset)}
+  def assign_changeset({:error, _map} = error, _changeset), do: error
+
+  @doc since: "0.2.0"
+  @spec assign_original({:ok, Map.t} | {:error, Map.t}, Function.t) :: {:ok, Map.t} | {:error, Map.t}
+  def assign_original({:ok, map}, params), do: {:ok, map |> Map.put(:original_params, params)}
+  def assign_original({:error, _map} = error, _params), do: error
+# 
+#   def convert_params(%{params: params} = data) do
+#     case params.valid? do
+#       true -> 
+#         {:ok, data |> Map.put(:params, Params.to_map(params))}
+#       _ -> params_error(params)
+#     end
+#   end
 end
