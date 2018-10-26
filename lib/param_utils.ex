@@ -3,6 +3,8 @@ defmodule ParamUtils do
   ParamUtils provides functions for converting user input into accepted internal data.
   """
 
+  import OK, only: ["~>>": 2]
+
   @doc since: "0.1.0"
   @doc """
   Params library removes nil and empty strings via changeset.
@@ -35,20 +37,67 @@ defmodule ParamUtils do
   end
 
   @doc since: "0.2.0"
-  @spec assign_changeset({:ok, Map.t} | {:error, Map.t}, Map.t) :: {:ok, Map.t} | {:error, Map.t}
-  def assign_changeset({:ok, map}, changeset), do: {:ok, map |> Map.put(:param_changeset, changeset)}
+  @spec assign_changeset({:ok, Map.t} | {:error, Map.t}, Function.t) :: {:ok, Map.t} | {:error, Map.t}
+  def assign_changeset({:ok, map}, changeset), do: {:ok, map |> Map.put(:changeset_function, changeset)}
   def assign_changeset({:error, _map} = error, _changeset), do: error
+
+  @doc since: "0.2.0"
+  @spec assign_data({:ok, Map.t} | {:error, Map.t}, Map.t) :: {:ok, Map.t} | {:error, Map.t}
+  def assign_data({:ok, map}, data), do: {:ok, map |> Map.put(:original_data, data)}
+  def assign_data({:error, _map} = error, _data), do: error
 
   @doc since: "0.2.0"
   @spec assign_original({:ok, Map.t} | {:error, Map.t}, Function.t) :: {:ok, Map.t} | {:error, Map.t}
   def assign_original({:ok, map}, params), do: {:ok, map |> Map.put(:original_params, params)}
   def assign_original({:error, _map} = error, _params), do: error
-# 
-#   def convert_params(%{params: params} = data) do
+ 
+  @doc since: "0.2.0"
+  @spec convert_params(%{changeset: Function.t, data: Map.t, params: Map.t}) :: {:ok, Map.t} | {:error, Map.t}
+  def convert_params(%{changeset: changeset, data: data, params: params}) do
+    {:ok, %{}}
+    |> assign_original(params)
+    |> assign_changeset(changeset)
+    |> assign_data(data)
+    ~>> run_changeset()
+    ~>> validate_changeset()
+    # Add nils back
+    # Print errors if there are any
 #     case params.valid? do
 #       true -> 
 #         {:ok, data |> Map.put(:params, Params.to_map(params))}
 #       _ -> params_error(params)
 #     end
-#   end
+  end
+
+  ###
+  ### PRIVATE
+  ###
+
+  defp run_changeset(%{original_data: data, original_params: params, changeset_function: changeset} = msg) do
+    {:ok, msg |> Map.put(:changeset, changeset.(data, params))}
+  end
+
+  defp validate_changeset(%{changeset: changeset} = msg) do
+    if changeset.valid? do
+      {:ok, msg}
+    else
+      params_error(changeset)
+    end
+  end
+
+  defp params_error(changeset) do
+    {:error, %{errors: translate_errors(changeset)}}
+  end
+
+  defp translate_error({msg, opts}) do
+    if count = opts[:count] do
+      Gettext.dngettext(ParamUtils.Gettext, "errors", msg, msg, count, opts)
+    else
+      Gettext.dgettext(ParamUtils.Gettext, "errors", msg, opts)
+    end
+  end
+
+  defp translate_errors(changeset) do
+    changeset |> Ecto.Changeset.traverse_errors(&translate_error/1)
+  end
 end

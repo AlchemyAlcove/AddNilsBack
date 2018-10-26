@@ -2,14 +2,16 @@ defmodule ParamUtils.Mixfile do
   use Mix.Project
 
   def project do
-    [app: :param_utils,
-     version: "0.1.0",
-     elixir: "~> 1.4",
-     build_embedded: Mix.env == :prod,
-     start_permanent: Mix.env == :prod,
-     description: description(),
-     package: package(),
-     deps: deps()]
+    [
+      app: :param_utils,
+      version: "0.1.0",
+      elixir: "~> 1.4",
+      build_embedded: Mix.env == :prod,
+      start_permanent: Mix.env == :prod,
+      description: description(),
+      package: package(),
+      deps: deps()
+    ]
   end
 
   defp description do
@@ -20,12 +22,14 @@ defmodule ParamUtils.Mixfile do
 
   defp package do
     [
-     files: ["lib", "mix.exs", "README.md"],
-     maintainers: ["Mike Hoffert"],
-     licenses: ["Apache 2.0"],
-     links: %{"GitHub" => "https://github.com/alchemyalcove/ParamUtils",
-	      "Docs" => "https://hexdocs.pm/param_utils/"}
-     ]
+      files: ["lib", "mix.exs", "README.md"],
+      maintainers: ["Mike Hoffert"],
+      licenses: ["Apache 2.0"],
+      links: %{
+        "GitHub" => "https://github.com/alchemyalcove/ParamUtils",
+        "Docs" => "https://hexdocs.pm/param_utils/"
+      }
+    ]
   end
 
   # Configuration for the OTP application
@@ -33,7 +37,11 @@ defmodule ParamUtils.Mixfile do
   # Type "mix help compile.app" for more information
   def application do
     # Specify extra applications you'll use from Erlang/Elixir
-    [extra_applications: [:logger]]
+    [
+      extra_applications: [
+        :logger
+      ]
+    ]
   end
 
   # Dependencies can be Hex packages:
@@ -48,7 +56,10 @@ defmodule ParamUtils.Mixfile do
   defp deps do
     [
       {:dialyxir, "~> 0.3", only: :dev},
-      {:ex_doc, "~> 0.11", only: :dev}
+      {:ex_doc, "~> 0.11", only: :dev},
+      {:gettext, "~> 0.16.0"},
+      {:ok, "~> 2.0"},
+      {:params, "~> 2.1"}
     ]
   end
 end
